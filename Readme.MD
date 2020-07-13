@@ -6,7 +6,7 @@
 
 ### Bournemouth University 2015 - 2016
 
-## Title
+## Description
 
 The project involved getting accustomed to using RenderMan and
 its associated API to model and render a simple scene containing an
