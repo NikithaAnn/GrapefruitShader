@@ -1,0 +1,46 @@
+#pointlight.rib
+Display "pointlight.tiff" "it" "rgb"
+Format 640 480 1.0
+
+#Hider "raytrace" "int incremental" [1] 
+#PixelVariance 0.01
+#Integrator "PxrDefault" "integrator"
+#Integrator "PxrVCM" "integrator"
+#Integrator "PxrDirectlighting" "integrator"
+#Integrator "PxrPathTracer" "integrator"
+
+Projection "perspective" "fov" [ 30 ]
+
+Translate 0 0 5
+
+WorldBegin
+
+#Illuminate "theLight" 1
+
+
+	LightSource "ambientlight" "myAmbient" "intensity" [0.5]
+	LightSource "spotlight" "firstspot" "from" [-3 4 -4.6] "to" [0 0 -1] "intensity" [1] "coneangle" [5] "conedeltaangle" [0.5]
+	LightSource "spotlight" "secondspot" "from" [3 4 -4.6] "to" [0 -2.6 0] "intensity" [1] "coneangle" [5] "conedeltaangle" [0.5]
+	LightSource "distantlight" "myDistant" "to" [0 0 1] "intensity" [0.5]
+
+
+	AttributeBegin
+	
+	#Bxdf "PxrDisney" "forTheTeapot" "float metallic" [1] "float roughness" [0.1]
+	
+	TransformBegin
+		
+			
+	Attribute "trace" "displacements" [ 1 ]
+	Attribute "displacementbound" "sphere" [30] "coordinatesystem" ["shader"]
+
+		Rotate -30 0 0 1
+		Rotate 55 1 0 0
+		Displacement "orange_displace_2"
+		Surface "orange_surface"
+		Scale 1 0.9 1
+		Sphere 1 -1 1 360
+	TransformEnd
+	AttributeEnd
+
+WorldEnd

@@ -1,0 +1,93 @@
+#pointlight.rib
+Display "pointlight.tiff" "it" "rgb"
+Format 640 480 1.0
+
+Hider "raytrace" "int incremental" [1]
+PixelVariance 0.01
+Integrator "PxrDefault" "integrator"
+Integrator "PxrVCM" "integrator"
+Integrator "PxrDirectlighting" "integrator"
+Integrator "PxrPathTracer" "integrator"
+
+Projection "perspective" "fov" [ 30 ]
+
+Translate -1 0 10
+
+WorldBegin
+
+	
+AttributeBegin
+	AreaLightSource "PxrStdEnvMapLight" "theEnvLight" "float exposure" [1]
+			"string rman__EnvMap" ["HDRI.tx"]
+			"float[2] rman__ProceduralResolution" [1024 512]
+	Rotate -90 1 0 0 
+	Geometry "envsphere" "constant float radius" [20]
+AttributeEnd
+
+
+AttributeBegin
+	#LightSource "pointlight" "theLight" "from" [ -2 2 -2 ] "intensity" [ 7 ]
+	AreaLightSource "PxrStdAreaLight" "theLight" "float exposure" [6]
+	Translate 5 5 -5
+	Sphere 0.3 -0.3 0.3 360
+AttributeEnd
+
+
+#-----------------------TABLE-------------------------------------------
+	Identity
+	AttributeBegin
+		Pattern "PxrTexture" "myTable" "string filename" "Table.tx"
+		Bxdf "PxrDisney" "forTheTeapot" "reference color baseColor" ["myTable:resultRGB"]
+		
+		Translate 1 -2 3
+		
+		Patch "bilinear" "P" [ -10 1 15
+							   -10 -2 -1
+							    10 4 15
+							    10 -2 -1]
+	AttributeEnd
+
+#-----------------------BACKGROUND--------------------------------------
+
+	
+	Identity
+	AttributeBegin
+		Pattern "PxrTexture" "myTexture" "string filename" "Background.tx"
+		Bxdf "PxrDisney" "forTheBackground" "reference color baseColor" ["myTexture:resultRGB"]
+		Patch "bilinear" "P" [ -10 -10 10
+							   -10 10 10
+							    10 -10 10
+							    10  10 10]  
+	
+	AttributeEnd
+
+#-----------------------SPHERE------------------------------------------
+
+AttributeBegin
+
+#	Pattern "PxrFlakes" "myShader" "float flakeFreq" [80]
+#	Bxdf "PxrDisney" "forTheTeapot" "reference color baseColor" ["myShader:resultA"]
+#	Bxdf "PxrDisney" "forTheTeapot" "float metallic" [1] "float roughness" [0.1]
+
+	Pattern "PxrOSL" "myShader" "string shader" "noise" "color Cin" [0.9 0.1 0.1]
+	Bxdf "PxrDisney" "forTheTeapot" "reference color baseColor" ["myShader:Cout"] "float specular" [0.5] "float roughness" [0.5]
+	
+	
+	
+	Attribute "trace" "displacements" [ 1 ]
+	Attribute "displacementbound" "sphere" [30] "coordinatesystem" ["shader"]
+	Displacement "orange_displace"
+
+	Scale 1.05 1 1
+	Rotate -30 0 0 1
+	Rotate 55 1 0 0
+ 
+	Sphere 1 -1 1 360
+
+
+	
+	
+AttributeEnd
+	
+	WorldEnd
+

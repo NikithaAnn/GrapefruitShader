@@ -1,0 +1,239 @@
+#------------------------------------------------------------------------
+#
+# Rendering Assignment
+# 2015 - 2016 
+# National Centre for Computer Animation, Bournemouth University
+#
+# Author: Nikitha Ann George
+# MSc Computer Animation and Visual Effects
+#
+# The following code has been written in RIB format using an OSL Surface
+# Shader and a displacement shader all of which has been included in the
+# file named; GSurface; GDisplace with an HDRI map called "HDRI.tx".
+# If you would like to change this; don't forget to make it a prman allowed
+# texture file using the command txmake "name_of_HDRI_file" "new_texture.tx"
+#
+# Note : A part of the code has been commented out which was done during developing
+# stages 
+#------------------------------------------------------------------------
+Display "Grapefruit.tiff" "it" "rgb"
+
+#Format 640 480 1.0
+Format 1280 720 1
+
+PixelFilter "gaussian" 2 2
+
+
+
+#DepthOfField 2 0.400 8
+
+Hider "raytrace" "int incremental" [1] "string integrationmode" ["path"] "int maxsamples" [256]
+
+
+PixelVariance 0.005
+
+Integrator "PxrDefault" "integrator"
+Integrator "PxrVCM" "integrator"
+Integrator "PxrDirectLighting" "integrator"
+Integrator "PxrPathTracer" "integrator"
+
+Projection "perspective" "fov" 50
+
+#-This part of the code has been taken from one of Pixars examples---
+Scale 1 1 -1
+Scale 1 1 1
+Rotate 47.9611 1 0 0
+Rotate -27.502 0 1 0
+Rotate -3.41509e-06 0 0 1
+Translate -8.5 -12.3495 -16.6915
+#-----------------------------------------------------------------------
+
+WorldBegin
+
+	#-----------------------------------------------------------------------	
+	AttributeBegin
+		AreaLightSource "PxrStdEnvMapLight" "theEnvLight" "float exposure" [0.5]
+			"string rman__EnvMap" ["HDRI.tx"] 
+			"float[2] rman__ProceduralResolution" [1024 512]
+		Rotate -90 1 0 0 
+		Geometry "envsphere" "constant float radius" [30]
+	AttributeEnd
+	#-----------------------------------------------------------------------
+
+	#---------------------RECT LIGHT-------------------------------------
+	#-----This code has been take from Pixar
+	AttributeBegin
+		Transform [ 49.0214 4.87617 45.7964 0  
+				  -7.96843 49.4662 3.26266 0  
+				  -19.5717 -4.56663 21.4362 0  
+				  -20.1224 35.1941 30.1932 1 ]
+
+		AreaLightSource "PxrAreaLight" "myRect" 
+			   "string shape" ["rect"] "float intensity" [2]
+		ShadingRate 1000
+		Geometry "rectlight"
+	AttributeEnd
+	#-----------------------------------------------------------------------
+			
+
+	#-----------------------TABLE-------------------------------------------
+	Identity
+	AttributeBegin
+		Translate 1 -2 3
+		Pattern "PxrOSL" "testOak" "shader" "oak"
+		Bxdf "PxrDisney" "wood" "reference color baseColor" ["testOak:Color"] 
+			   "reference float roughness" ["testOak:Roughness"]
+
+
+		Translate -6 -0.0705802 0
+		Rotate 0 0 0 1
+		Rotate 0 0 1 0
+		Rotate 0 1 0 0
+
+		Scale 70 70 75
+		TrimCurve [] [] [] [] [] [] [] [] []
+		NuPatch 7 4 [0 0 0 0 0.25 0.5 0.75 1 1 1 1] 0 1 7 4 [0 0 0 0 0.25 0.5 0.75 1 1 1 1] 0 1 "Pw" [-0.5 3.06152e-17 -0.5 1
+					-0.416667 3.06152e-17 -0.5 1 -0.25 3.06152e-17 -0.5 1 6.93889e-18 3.06152e-17 -0.5 1
+					0.25 3.06152e-17 -0.5 1 0.416667 3.06152e-17 -0.5 1 0.5 3.06152e-17 -0.5 1
+					-0.5 2.55126e-17 -0.416667 1 -0.416667 2.55126e-17 -0.416667 1 -0.25 2.55126e-17 -0.416667 1
+					6.93889e-18 2.55126e-17 -0.416667 1 0.25 2.55126e-17 -0.416667 1 0.416667 2.55126e-17 -0.416667 1
+					0.5 2.55126e-17 -0.416667 1 -0.5 1.53076e-17 -0.25 1 -0.416667 1.53076e-17 -0.25 1
+					-0.25 1.53076e-17 -0.25 1 6.93889e-18 1.53076e-17 -0.25 1 0.25 1.53076e-17 -0.25 1
+					0.416667 1.53076e-17 -0.25 1 0.5 1.53076e-17 -0.25 1 -0.5 4.24871e-34 -6.93889e-18 1
+					-0.416667 4.24871e-34 -6.93889e-18 1 -0.25 4.24871e-34 -6.93889e-18 1 6.93889e-18 4.24871e-34 -6.93889e-18 1
+					0.25 4.24871e-34 -6.93889e-18 1 0.416667 4.24871e-34 -6.93889e-18 1 0.5 4.24871e-34 -6.93889e-18 1
+					-0.5 -1.53076e-17 0.25 1 -0.416667 -1.53076e-17 0.25 1 -0.25 -1.53076e-17 0.25 1
+					6.93889e-18 -1.53076e-17 0.25 1 0.25 -1.53076e-17 0.25 1 0.416667 -1.53076e-17 0.25 1
+					0.5 -1.53076e-17 0.25 1 -0.5 -2.55126e-17 0.416667 1 -0.416667 -2.55126e-17 0.416667 1
+					-0.25 -2.55126e-17 0.416667 1 6.93889e-18 -2.55126e-17 0.416667 1 0.25 -2.55126e-17 0.416667 1
+					0.416667 -2.55126e-17 0.416667 1 0.5 -2.55126e-17 0.416667 1 -0.5 -3.06152e-17 0.5 1
+					-0.416667 -3.06152e-17 0.5 1 -0.25 -3.06152e-17 0.5 1 6.93889e-18 -3.06152e-17 0.5 1
+					0.25 -3.06152e-17 0.5 1 0.416667 -3.06152e-17 0.5 1 0.5 -3.06152e-17 0.5 1]
+	AttributeEnd
+
+	#-----------------------BACKGROUND--------------------------------------
+
+	#  AttributeBegin
+	#    Rotate 5 0 1 0
+	 #   Rotate 90 0 1 0
+	#    Translate 0 60 0
+	 #   Rotate -125 0 0 1
+	 #   Pattern "PxrTexture" "cyltex" "string filename" "ratGrid.tex" "int invertT" [0]
+	#    Bxdf "PxrDisney" "smooth" "reference color baseColor" "cyltex:resultRGB" "float roughness" 0.5
+	 #   Cylinder 60 -55 55 125
+		
+	#  AttributeEnd
+		
+	#	Identity
+	#	AttributeBegin
+	#		Pattern "PxrTexture" "myTexture" "string filename" "Background.tx"
+	#		Bxdf "PxrDisney" "forTheBackground" "reference color baseColor" ["myTexture:resultRGB"]
+	#		Patch "bilinear" "P" [ -10 -10 10
+	#							   -10 10 10
+	#							    10 -10 10
+	#							    10  10 10]  
+		
+	#	AttributeEnd
+
+	#-----------------------GrapeFruits------------------------------------------
+
+	AttributeBegin
+
+
+		Attribute "trace" "displacements" [ 1 ]
+		Attribute "displacementbound" "sphere" [40] "coordinatesystem" ["shader"]
+
+
+		#Bxdf "PxrDisney" "forTheTeapot" "color baseColor" [ 0 0 1]
+		#	 "float specular" [0.7] "float roughness" [0.3]
+
+
+		Translate -1 0 8
+		#This rotation changes the axis to
+		Rotate 90 1 0 0
+		# x is +ve moving towards first grapefruit
+		# y is getting +ve closer to camera
+		# z is going up and down with +ve meaning down
+
+
+		#Middle Grapefruit
+		AttributeBegin
+			Pattern "PxrOSL" "myShader" "string shader" "grapefruit_surface"
+			Bxdf "PxrDisney" "forTheTeapot" "reference color baseColor" ["myShader:Ct"]
+			"float specular" [0.5] "float roughness" [0.3]
+			
+			Translate 4.5 1 -1
+			Rotate -10 0 1 0
+			#Rotate 10 1 0 0
+			Scale  2.5 2.6 2.5
+			Displacement "grapefruit_displace" "float Ko" [0.5] 
+			Sphere 1.5 -1.5 1.5 360
+		AttributeEnd	
+
+		#Left Front Grapefruit
+		AttributeBegin
+			Pattern "PxrOSL" "myShader" "string shader" "grapefruit_surface"
+			Bxdf "PxrDisney" "forTheTeapot" "reference color baseColor" ["myShader:Ct"]
+			"float specular" [0.5] "float roughness" [0.3]
+
+			Translate -6 0 0
+			Rotate -15 1 0 0
+			Scale  3 3.5 3.5
+			Displacement "grapefruit_displace" 
+			#Sphere 1 -1 1 360
+		AttributeEnd
+
+		#Left Back Grapefruit with 9 spokes
+		AttributeBegin
+			Pattern "PxrOSL" "myShader" "string shader" "grapefruit_surface"
+			Bxdf "PxrDisney" "forTheTeapot" "reference color baseColor" ["myShader:Ct"]
+			"float specular" [0.5] "float roughness" [0.3]
+
+			Translate -6 -7 0
+			Rotate 25 1 0 0
+			Scale 2 2 2.1
+			Displacement "grapefruit_displace" "int numberofspokes" [9]
+			#Sphere 2 -2 2 360
+		AttributeBegin
+
+
+		
+		Displacement "grapefruit_displace"
+
+		#Right Grapefruit that is behind the first One - NoiseControl is set to 0
+		AttributeBegin
+			Pattern "PxrOSL" "myShader" "string shader" "grapefruit_surface" "float noisecontrol" [0]
+			Bxdf "PxrDisney" "forTheTeapot" "reference color baseColor" ["myShader:Ct"]
+			"float specular" [0.5] "float roughness" [0.3]
+
+			Translate 7 -2 0
+			Scale 1.1 1.1 1.1
+			#Sphere 1.5 -1.5 1.5 360
+		AttributeEnd
+
+		Pattern "PxrOSL" "myShader" "string shader" "grapefruit_surface"
+		Bxdf "PxrDisney" "forTheTeapot" "reference color baseColor" ["myShader:Ct"]
+		"float specular" [0.5] "float roughness" [0.3]
+
+		#The one close to the camera
+		TransformBegin
+			Translate 12 6 0
+			Scale 2 2 2
+			#Sphere 2 -2 2 360
+		TransformEnd
+
+	AttributeEnd
+
+
+
+#---------------------------Checking LIGHTS---------------------------------------------------------------
+	AttributeBegin
+
+			Bxdf "PxrDisney" "forTheTeapot" "float metallic" [1] "float roughness" [0.1]
+			Translate 4 0 0 
+			#Sphere 5 -5 5 360
+
+	AttributeEnd
+#----------------------------------------------------------------------------------------------------------
+
+WorldEnd
